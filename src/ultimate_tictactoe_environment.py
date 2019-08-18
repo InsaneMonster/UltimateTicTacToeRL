@@ -517,8 +517,7 @@ class UltimateTicTacToeEnvironment(Environment):
         :param session: the session of tensorflow currently running, if any
         :return: the action of the environment agent at the first state
         """
-        # raise NotImplementedError()
-        return self.get_random_action(logger, session)
+        raise NotImplementedError()
 
     def get_environment_player_action(self,
                                       logger: logging.Logger,
@@ -530,5 +529,4 @@ class UltimateTicTacToeEnvironment(Environment):
         :param session: the session of tensorflow currently running, if any
         :return: the action of the environment agent at the current state
         """
-        # raise NotImplementedError()
-        return self.get_random_action(logger, session)
+        raise NotImplementedError()
