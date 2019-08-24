@@ -24,7 +24,7 @@ def _define_dddqn_model(config: Config) -> DuelingDeepQLearning:
     # Define attributes
     learning_rate: float = 0.0000001
     discount_factor: float = 0.99
-    buffer_capacity: int = 1000000
+    buffer_capacity: int = 100000
     minimum_sample_probability: float = 0.01
     random_sample_trade_off: float = 0.6
     importance_sampling_value_increment: float = 0.4
@@ -99,40 +99,29 @@ if __name__ == "__main__":
     # Ultimate Tic Tac Toe self play environment:
     #       - success threshold to consider both the training completed and the experiment successful is around 30% of match won by the agent (depending on reward assigned)
     environment_name: str = 'UltimateTicTacToeSelfPlay'
-    # Generate Tic Tac Toe environments with fixed environment player and using the O player as the environment player with two reward types
-    environment_low_reward: UltimateTicTacToeEnvironmentSelfPlay = UltimateTicTacToeEnvironmentSelfPlay(environment_name, Player.o,
-                                                                                                        1.0, -0.1, 0.0,
-                                                                                                        dddqn_epsilon_greedy_agent)
-    environment_high_reward: UltimateTicTacToeEnvironmentSelfPlay = UltimateTicTacToeEnvironmentSelfPlay(environment_name, Player.o,
-                                                                                                         100.0, -10.0, 0.0,
-                                                                                                         dddqn_epsilon_greedy_agent)
-    # Define interfaces
-    interface_low_reward: UltimateTicTacToePassThroughInterface = UltimateTicTacToePassThroughInterface(environment_low_reward)
-    interface_high_reward: UltimateTicTacToePassThroughInterface = UltimateTicTacToePassThroughInterface(environment_high_reward)
+    # Generate Tic Tac Toe environment with fixed environment player and using the O player as the environment player with only low reward type
+    environment: UltimateTicTacToeEnvironmentSelfPlay = UltimateTicTacToeEnvironmentSelfPlay(environment_name, Player.o,
+                                                                                             1.0, -0.1, 0.0,
+                                                                                             dddqn_epsilon_greedy_agent)
+    # Define interface
+    interface: UltimateTicTacToePassThroughInterface = UltimateTicTacToePassThroughInterface(environment)
     # Define experiments
     success_threshold: float = 0.30
-    experiment_egreedy_low_reward: UltimateTicTacToeExperiment = UltimateTicTacToeExperiment("eg_experiment_low_reward", success_threshold,
-                                                                                             environment_low_reward,
-                                                                                             dddqn_epsilon_greedy_agent, interface_low_reward)
-    experiment_boltzmann_low_reward: UltimateTicTacToeExperiment = UltimateTicTacToeExperiment("b_experiment_low_reward", success_threshold,
-                                                                                               environment_low_reward,
-                                                                                               dddqn_boltzmann_agent, interface_low_reward)
-    success_threshold: float = 30.0
-    experiment_egreedy_high_reward: UltimateTicTacToeExperiment = UltimateTicTacToeExperiment("eg_experiment_high_reward", success_threshold,
-                                                                                              environment_high_reward,
-                                                                                              dddqn_epsilon_greedy_agent, interface_high_reward)
-    experiment_boltzmann_high_reward: UltimateTicTacToeExperiment = UltimateTicTacToeExperiment("b_experiment_high_reward", success_threshold,
-                                                                                                environment_high_reward,
-                                                                                                dddqn_boltzmann_agent, interface_high_reward)
+    experiment_egreedy: UltimateTicTacToeExperiment = UltimateTicTacToeExperiment("eg_experiment", success_threshold,
+                                                                                  environment,
+                                                                                  dddqn_epsilon_greedy_agent, interface)
+    experiment_boltzmann: UltimateTicTacToeExperiment = UltimateTicTacToeExperiment("b_experiment", success_threshold,
+                                                                                    environment,
+                                                                                    dddqn_boltzmann_agent, interface)
     # Define experiments data
     testing_episodes: int = 100
     test_cycles: int = 10
     training_episodes: int = 1000
     validation_episodes: int = 100
-    max_training_episodes: int = 50000
+    max_training_episodes: int = 10000
     episode_length_max: int = 100
-    # Run epsilon greedy experiment for low reward
-    run_experiment(experiment_egreedy_low_reward,
+    # Run epsilon greedy experiment
+    run_experiment(experiment_egreedy,
                    training_episodes,
                    max_training_episodes, episode_length_max,
                    validation_episodes,
@@ -140,26 +129,8 @@ if __name__ == "__main__":
                    render_during_training, render_during_validation, render_during_test,
                    workspace_path, __file__,
                    logger, None, experiment_iterations_number)
-    # Run boltzmann experiment for low reward
-    run_experiment(experiment_boltzmann_low_reward,
-                   training_episodes,
-                   max_training_episodes, episode_length_max,
-                   validation_episodes,
-                   testing_episodes, test_cycles,
-                   render_during_training, render_during_validation, render_during_test,
-                   workspace_path, __file__,
-                   logger, None, experiment_iterations_number)
-    # Run epsilon greedy experiment for high reward
-    run_experiment(experiment_egreedy_high_reward,
-                   training_episodes,
-                   max_training_episodes, episode_length_max,
-                   validation_episodes,
-                   testing_episodes, test_cycles,
-                   render_during_training, render_during_validation, render_during_test,
-                   workspace_path, __file__,
-                   logger, None, experiment_iterations_number)
-    # Run boltzmann experiment for high reward
-    run_experiment(experiment_boltzmann_high_reward,
+    # Run boltzmann experiment
+    run_experiment(experiment_boltzmann,
                    training_episodes,
                    max_training_episodes, episode_length_max,
                    validation_episodes,
