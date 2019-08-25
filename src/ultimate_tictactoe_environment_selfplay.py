@@ -50,7 +50,7 @@ class UltimateTicTacToeEnvironmentSelfPlay(UltimateTicTacToeEnvironment):
             self.last_player = Player.o
         elif self.last_player == Player.o:
             self.last_player = Player.x
-        agent_action: int = self._agent.act_adversarial(logger, session, self._interface, observation_current)
+        agent_action: int = self._agent.act_inference(logger, session, self._interface, observation_current)
         # Revert back the environment player
         if self.current_player == Player.x:
             self.current_player = Player.o

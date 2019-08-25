@@ -1,6 +1,8 @@
 # Import packages
 
 import logging
+import numpy
+import math
 
 # Import usienarl
 
@@ -46,7 +48,7 @@ class UltimateTicTacToePassThroughInterface(Interface):
 
     def get_possible_actions(self,
                              logger: logging.Logger,
-                             session):
+                             session) -> []:
         """
         Get the possible agent actions from the environment current state available actions.
 
@@ -59,6 +61,26 @@ class UltimateTicTacToePassThroughInterface(Interface):
         for environment_action in environment_actions:
             agent_actions.append(self.environment_action_to_agent_action(logger, session, environment_action))
         return agent_actions
+
+    def get_action_mask(self,
+                        logger: logging.Logger,
+                        session) -> numpy.ndarray:
+        """
+        Get an array representing the agent action mask (-infinity masked out actions, 1.0 available actions).
+
+        :param logger: the logger used to print the interface information, warnings and errors
+        :param session: the session of tensorflow currently running, if any
+        :return: an array of values where 0.0 means available action at that index, -infinity means instead not available
+        """
+        # Get the possible actions
+        possible_actions: [] = self.get_possible_actions(logger, session)
+        # Generate a numpy array of -infinity
+        mask: numpy.ndarray = -math.inf * numpy.ones(self.agent_action_space_shape, dtype=float)
+        # Set to one all indexes contained in the possible action list
+        for action_index in possible_actions:
+            mask[action_index] = 0.0
+        # Return the mask
+        return mask
 
     @property
     def observation_space_type(self) -> SpaceType:

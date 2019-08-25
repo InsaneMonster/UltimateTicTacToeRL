@@ -73,15 +73,8 @@ class DDDQLUltimateTicTacToeAgent(Agent):
         if random.uniform(0, 1) < self.warmup_random_action_probability:
             action = interface.get_random_agent_action(logger, session)
         else:
-            # Get all actions q-values predicted by the model
-            all_actions = self._model.get_all_actions(session, agent_observation_current)
-            # Mask the actions with the possible actions in the environment
-            mask: [] = interface.get_possible_actions(logger, session)
-            for action_index in range(all_actions.size):
-                if action_index not in mask:
-                    all_actions[0, action_index] = -math.inf
-            # Compute the best action according to the masked q-values and act according to it
-            action = numpy.argmax(all_actions)
+            # Return the best action predicted by the model with the current possible action mask
+            action = self._model.get_best_action(session, agent_observation_current, interface.get_action_mask(logger, session))
         # Return the chosen action
         return action
 
@@ -90,15 +83,8 @@ class DDDQLUltimateTicTacToeAgent(Agent):
                   session,
                   interface: UltimateTicTacToePassThroughInterface,
                   agent_observation_current):
-        # Get all actions q-values predicted by the model
-        all_actions = self._model.get_all_actions(session, agent_observation_current)
-        # Mask the actions with the possible actions in the environment
-        mask: [] = interface.get_possible_actions(logger, session)
-        for action_index in range(all_actions.size):
-            if action_index not in mask:
-                all_actions[0, action_index] = -math.inf
-        # Compute the best action according to the masked q-values
-        best_action = numpy.argmax(all_actions)
+        # Get the best action predicted by the model and all relative action q-values
+        best_action, all_actions = self._model.get_best_action_and_all_action_values(session, agent_observation_current, interface.get_action_mask(logger, session))
         # Act according to the exploration policy
         action = self._exploration_policy.act(logger, session, interface, all_actions, best_action)
         # Return the chosen action
@@ -109,17 +95,8 @@ class DDDQLUltimateTicTacToeAgent(Agent):
                       session,
                       interface: UltimateTicTacToePassThroughInterface,
                       agent_observation_current):
-        # Get all actions q-values predicted by the model
-        all_actions = self._model.get_all_actions(session, agent_observation_current)
-        # Mask the actions with the possible actions in the environment
-        mask: [] = interface.get_possible_actions(logger, session)
-        for action_index in range(all_actions.size):
-            if action_index not in mask:
-                all_actions[0, action_index] = -math.inf
-        # Compute the best action according to the masked q-values and act according to it
-        action = numpy.argmax(all_actions)
-        # Return the chosen action
-        return action
+        # Return the best action predicted by the model with the current possible action mask
+        return self._model.get_best_action(session, agent_observation_current, interface.get_action_mask(logger, session))
 
     def complete_step_warmup(self,
                              logger: logging.Logger,

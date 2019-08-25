@@ -6,6 +6,7 @@ import random
 import time
 import enum
 import copy
+import math
 
 # Import usienarl
 
@@ -278,15 +279,29 @@ class UltimateTicTacToeEnvironment(Environment):
 
     def get_possible_actions(self,
                              logger: logging.Logger,
-                             session):
+                             session) -> []:
         """
-        Return all the possible action at the current state in the environment.
+        Return a list of the indices of all the possible actions at the current state of the environment.
 
         :param logger: the logger used to print the environment information, warnings and errors
         :param session: the session of tensorflow currently running, if any
-        :return: the list of possible actions
+        :return: a list of indices containing the possible actions
         """
-        # Compute the last action board, if any
+        # Get the mask
+        mask: numpy.ndarray = self.get_action_mask(logger, session)
+        # Return the list of possible actions from the mask indices
+        return numpy.where(mask >= 0.0)[0].tolist()
+
+    def get_action_mask(self,
+                        logger: logging.Logger,
+                        session) -> numpy.ndarray:
+        """
+        Return all the possible action at the current state in the environment wrapped in a numpy array mask.
+
+        :param logger: the logger used to print the environment information, warnings and errors
+        :param session: the session of tensorflow currently running, if any
+        :return: an array of -infinity (for unavailable actions) and 0.0 (for available actions)
+        """
         last_action_position = None
         if self._last_action is not None:
             _, remainder = divmod(self._last_action, 18)
@@ -304,8 +319,8 @@ class UltimateTicTacToeEnvironment(Environment):
                         break
                 if not empty_found:
                     last_action_position = None
-        # Get all the possible actions according to position and last action
-        possible_actions: [] = []
+        # Get all the possible action mask according to current board state and the last action
+        mask: numpy.ndarray = -math.inf * numpy.ones(self.action_space_shape, dtype=float)
         for action in range(*self.action_space_shape):
             board_index, remainder = divmod(action, 18)
             # Check the last action position (the new action board) and skip the action if it's the wrong one
@@ -322,8 +337,8 @@ class UltimateTicTacToeEnvironment(Environment):
             else:
                 player = Player.x
             if self._board[board_index][position] == Player.none and player == self.current_player:
-                possible_actions.append(action)
-        return possible_actions
+                mask[action] = 0.0
+        return mask
 
     @staticmethod
     def _get_board_winner(board: []) -> Player:
