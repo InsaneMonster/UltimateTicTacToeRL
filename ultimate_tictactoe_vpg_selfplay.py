@@ -13,7 +13,7 @@ from usienarl.po_models import VanillaPolicyGradient
 
 from src.vpg_ultimate_tictactoe_agent import VPGUltimateTicTacToeAgent
 from src.ultimate_tictactoe_experiment import UltimateTicTacToeExperiment
-from src.ultimate_tictactoe_environment_random import UltimateTicTacToeEnvironmentRandom, Player
+from src.ultimate_tictactoe_environment_selfplay import UltimateTicTacToeEnvironmentSelfPlay, Player
 from src.ultimate_tictactoe_pass_through_interface import UltimateTicTacToePassThroughInterface
 
 # Define utility functions to run the experiment
@@ -48,26 +48,31 @@ if __name__ == "__main__":
     # Define the logger
     logger: logging.Logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
-    # Ultimate Tic Tac Toe random environment:
-    #       - success threshold to consider both the training completed and the experiment successful is around 82,5% of match won by the agent (depending on reward assigned)
-    environment_name: str = 'UltimateTicTacToeRandom'
-    # Generate Ultimate Tic Tac Toe environment with random environment player and using the O player as the environment player with only low reward type
-    environment: UltimateTicTacToeEnvironmentRandom = UltimateTicTacToeEnvironmentRandom(environment_name, Player.o,
-                                                                                         1.0, -0.1, 0.0)
     # Define Neural Network layers
     nn_config: Config = Config()
-    nn_config.add_hidden_layer(LayerType.dense, [2048, tensorflow.nn.relu, True, tensorflow.contrib.layers.xavier_initializer()])
-    nn_config.add_hidden_layer(LayerType.dense, [2048, tensorflow.nn.relu, True, tensorflow.contrib.layers.xavier_initializer()])
-    nn_config.add_hidden_layer(LayerType.dense, [2048, tensorflow.nn.relu, True, tensorflow.contrib.layers.xavier_initializer()])
-    nn_config.add_hidden_layer(LayerType.dense, [2048, tensorflow.nn.relu, True, tensorflow.contrib.layers.xavier_initializer()])
+    nn_config.add_hidden_layer(LayerType.dense,
+                               [2048, tensorflow.nn.relu, True, tensorflow.contrib.layers.xavier_initializer()])
+    nn_config.add_hidden_layer(LayerType.dense,
+                               [2048, tensorflow.nn.relu, True, tensorflow.contrib.layers.xavier_initializer()])
+    nn_config.add_hidden_layer(LayerType.dense,
+                               [2048, tensorflow.nn.relu, True, tensorflow.contrib.layers.xavier_initializer()])
+    nn_config.add_hidden_layer(LayerType.dense,
+                               [2048, tensorflow.nn.relu, True, tensorflow.contrib.layers.xavier_initializer()])
     # Define model
     inner_model: VanillaPolicyGradient = _define_vpg_model(nn_config)
     # Define agent
     vpg_agent: VPGUltimateTicTacToeAgent = _define_agent(inner_model)
+    # Ultimate Tic Tac Toe self play environment:
+    #       - success threshold to consider both the training completed and the experiment successful is just the number of training episodes (a too high number) of match won by the agent (depending on reward assigned)
+    environment_name: str = 'UltimateTicTacToeSelfPlay'
+    # Generate Ultimate Tic Tac Toe environment with self play environment player and using the O player as the environment player with only low reward type
+    environment: UltimateTicTacToeEnvironmentSelfPlay = UltimateTicTacToeEnvironmentSelfPlay(environment_name, Player.o,
+                                                                                             1.0, -0.1, 0.0, vpg_agent)
+
     # Define interface
     interface: UltimateTicTacToePassThroughInterface = UltimateTicTacToePassThroughInterface(environment)
     # Define experiments
-    success_threshold: float = 0.825
+    success_threshold: float = 100.0
     experiment: UltimateTicTacToeExperiment = UltimateTicTacToeExperiment("experiment", success_threshold,
                                                                           environment,
                                                                           vpg_agent, interface)
@@ -76,7 +81,7 @@ if __name__ == "__main__":
     test_cycles: int = 10
     training_episodes: int = 1000
     validation_episodes: int = 1000
-    max_training_episodes: int = 100000
+    max_training_episodes: int = 50000
     episode_length_max: int = 100
     # Run epsilon greedy experiment
     run_experiment(experiment,

@@ -2,10 +2,13 @@
 
 import logging
 
+# Import usienarl package
+
+from usienarl import Agent
+
 # Import src
 
 from src.ultimate_tictactoe_environment import UltimateTicTacToeEnvironment, Player
-from src.dddql_ultimate_tictactoe_agent import DDDQLUltimateTicTacToeAgent
 from src.ultimate_tictactoe_pass_through_interface import UltimateTicTacToePassThroughInterface
 
 
@@ -22,9 +25,9 @@ class UltimateTicTacToeEnvironmentSelfPlay(UltimateTicTacToeEnvironment):
                  agent_player_win_reward: float,
                  environment_player_win_reward: float,
                  draw_reward: float,
-                 agent: DDDQLUltimateTicTacToeAgent):
+                 agent: Agent):
         # Define environment attributes
-        self._agent: DDDQLUltimateTicTacToeAgent = agent
+        self._agent: Agent = agent
         self._interface: UltimateTicTacToePassThroughInterface = UltimateTicTacToePassThroughInterface(self)
         # Generate the base tic tac toe environment
         super(UltimateTicTacToeEnvironmentSelfPlay, self).__init__(name, environment_player, agent_player_win_reward, environment_player_win_reward, draw_reward)
