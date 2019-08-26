@@ -1,0 +1,2 @@
+model_checkpoint_path: "F:\\Workspace\\PyCharm\\UltimateTicTacToeRL\\experiments\\/ultimate_tictactoe_vpg_vs_random_2019-08-25/experiment/metagraph/experiment"
+all_model_checkpoint_paths: "F:\\Workspace\\PyCharm\\UltimateTicTacToeRL\\experiments\\/ultimate_tictactoe_vpg_vs_random_2019-08-25/experiment/metagraph/experiment"
