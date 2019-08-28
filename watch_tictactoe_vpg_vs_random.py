@@ -74,7 +74,7 @@ if __name__ == "__main__":
     # Define experiment data
     testing_episodes: int = 100
     test_cycles: int = 10
-    episode_length_max: int = 20
+    episode_length_max: int = 100
     # Run epsilon greedy experiment for low reward
     watch_experiment(experiment,
                      testing_episodes, test_cycles,
