@@ -5,7 +5,9 @@ A collection of experiments with different approaches using Q-Learning with func
 
 The framework used is `USienaRL <https://github.com/InsaneMonster/USienaRL>`_.
 
-*Authors*: Luca Pasqualini, Valentino delle Rose
+Compatible with **USienaRL 0.4.3.**
+
+*Authors*: Luca Pasqualini, Valentino Delle Rose
 
 **Installation**
 

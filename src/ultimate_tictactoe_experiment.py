@@ -1,3 +1,13 @@
+#
+# Copyright (C) 2019 Luca Pasqualini
+# University of Siena - Artificial Intelligence Laboratory - SAILab
+#
+#
+# UltimateTicTacToeRL project is licensed under a BSD 3-Clause.
+#
+# You should have received a copy of the license along with this
+# work. If not, see <https://opensource.org/licenses/BSD-3-Clause>.
+
 # Import packages
 
 import logging
@@ -36,6 +46,13 @@ class UltimateTicTacToeExperiment(Experiment):
         if last_average_validation_total_reward >= self._validation_threshold:
             return True
         return False
+
+    def _display_test_cycle_metrics(self,
+                                    logger: logging.Logger,
+                                    last_test_cycle_average_total_reward: float,
+                                    last_test_cycle_average_scaled_reward: float,
+                                    last_test_cycle_rewards: []):
+        pass
 
     def _is_successful(self, logger: logging.Logger, average_test_total_reward: float,
                        average_test_scaled_reward: float, max_test_total_reward: float, max_test_scaled_reward: float,
