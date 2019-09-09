@@ -20,3 +20,9 @@ Compatible with **USienaRL 0.4.3.**
 
 To watch the already trained models, always check if the path specified inside the checkpoint file (under metagraph directory) points towards the actual metagraph location.
 Since it saves absolute paths it is likely to not be the case.
+
+**License**
+
+*BSD 3-Clause License*
+
+For additional information check the provided license file.
